@@ -20,5 +20,5 @@ def generateQRCode(str):
     img = qr.make_image()
     img.save("qr.png");
 
-data = encrypt("2:1:1")
+data = encrypt("1:1:1:1")
 generateQRCode(data)
