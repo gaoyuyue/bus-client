@@ -5,7 +5,7 @@ from PyQt5.QtCore import *
 import base64
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_v1_5 as Cipher_pkcs1_v1_5
-# import pygame
+import pygame
 import cv2
 from pyzbar.pyzbar import decode
 from PIL import Image
@@ -17,8 +17,8 @@ import requests
 licensePlate = 1
 busBookServerAddress = "http://10.55.90.6:8000"
 positionServerAddress = "http://10.55.90.6:8099"
-serialPort = "/dev/ttyUSB1"
-audioPath = "/home/pi/audio"
+serialPort = "/dev/ttyUSB0"
+audioPath = "./audio/"
 
 class PostHandler(QThread):
     def __init__(self,url,parent=None):
@@ -86,10 +86,9 @@ class ScanningHandler(QThread):
             return text
 
     def playMP3(self,path):
-        pass
-        #pygame.mixer.init()
-        #pygame.mixer.music.load(path)
-        #pygame.mixer.music.play()
+        pygame.mixer.init()
+        pygame.mixer.music.load(path)
+        pygame.mixer.music.play()
 
     def scanning(self):
         results = set()
@@ -117,17 +116,18 @@ class ScanningHandler(QThread):
                 if len(result) != 4 or result[0] == "" or result[1] == "" or result[2] == "" or result[3] == "":
                     continue
                 if result[0] != str(self.busNumInfoId):
+                    self.playMP3(audioPath + "f_notNow.mp3")
                     continue
                 if result[1] != str(self.busNum):
-                    self.playMP3(audioPath + "s" + result[1] + ".mp3")
+                    self.playMP3(audioPath + "f_" + result[1] + ".mp3")
                 else:
                     if result[2] in results:
-                        self.playMP3(audioPath + "e.mp3")
+                        self.playMP3(audioPath + "f_exist.mp3")
                     else:
                         results.add(result[2])
                         self.seatNum.emit(int(result[2]))
                         self.id.emit(int(result[3]))
-                        self.playMP3(audioPath + "c" + result[2] + ".mp3")
+                        self.playMP3(audioPath + "s_" + result[2] + ".mp3")
                 print('decoded:' + symbol.type + 'symbol:' + data)
         camera.release()
 
