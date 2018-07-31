@@ -1,18 +1,18 @@
-import sys
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-
 import base64
-from Crypto.PublicKey import RSA
-from Crypto.Cipher import PKCS1_v1_5 as Cipher_pkcs1_v1_5
-import pygame
-import cv2
-from pyzbar.pyzbar import decode
-from PIL import Image
+import sys
 import time
-import serial
+
+import cv2
+import pygame
 import pynmea2
 import requests
+import serial
+from Crypto.Cipher import PKCS1_v1_5 as Cipher_pkcs1_v1_5
+from Crypto.PublicKey import RSA
+from PIL import Image
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
+from pyzbar.pyzbar import decode
 
 licensePlate = 1
 busBookServerAddress = "http://10.55.90.6:8000"
@@ -171,6 +171,7 @@ class BusNumberDialog(QDialog):
         layout.addWidget(self.busNumComboBox)
         layout.addWidget(selectButton)
         self.setLayout(layout)
+        self.showFullScreen()
         super(BusNumberDialog, self).show()
 
     def getRoute(self):
@@ -269,12 +270,13 @@ class SeatDialog(QDialog):
         
         seatBox = QGroupBox("座位号")
         bodyLayout = QGridLayout()
-        col = 4
+        col = 10
         response = requests.get(busBookServerAddress + "/public/getBusCapacity")
         for i in range(response.json()):
             r = i / col
             c = i % col
             b = QPushButton(str(i+1))
+            b.setFixedSize(30,20)
             b.setObjectName(str(i+1))
             b.setStyleSheet('background-color:green')
             bodyLayout.addWidget(b,r,c)
@@ -297,6 +299,7 @@ class SeatDialog(QDialog):
         self.gps_post = PostHandler(positionServerAddress + "/position")
         self.gps_process.gps.connect(self.gps_post.gpsChange)
         self.gps_post.start()
+        self.showFullScreen()
         super(SeatDialog, self).show()
 
     def setSeat(self,num):
