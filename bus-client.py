@@ -15,8 +15,8 @@ from PyQt5.QtWidgets import *
 from pyzbar.pyzbar import decode
 
 licensePlate = 1
-busBookServerAddress = "http://10.55.90.6:8000"
-positionServerAddress = "http://10.55.90.6:8099"
+busBookServerAddress = "http://120.77.87.244"
+positionServerAddress = "http://139.199.123.242:8099"
 serialPort = "/dev/ttyUSB0"
 audioPath = "./audio/"
 
@@ -61,9 +61,14 @@ class GPSHandler(QThread):
             lon = rmc.lon
             timestamp = str(rmc.timestamp)
             if lat != "" and lon != "" and timestamp != "":
-                self.gps.emit([timestamp,float(lat)/100, float(lon)/100])
+                self.gps.emit([timestamp,self.transform(lat), self.transform(lon)])
             else:
                 self.gps.emit([ "无信号","无信号", "无信号"])
+
+    def transform(self, val):
+        vals = str(float(val) / 100).split(".")
+        return '%.6f' % (float(vals[0]) + float("0." + vals[1]) * 100 / 60)
+
 
 class ScanningHandler(QThread):
     seatNum = pyqtSignal(int)
@@ -254,17 +259,17 @@ class SeatDialog(QDialog):
         self.setWindowTitle("车辆状态")
         latLabel = QLabel("纬度：")
         lonLabel = QLabel("经度：")
-        timeLabel = QLabel("时间：")
+        # timeLabel = QLabel("时间：")
         self.latText = QLabel()
         self.lonText = QLabel()
-        self.timeText = QLabel()
+        # self.timeText = QLabel()
         poistionBox = QGroupBox("定位信息")
         headerLayout = QHBoxLayout()
         headerLayout.addWidget(latLabel)
         headerLayout.addWidget(self.latText)
         headerLayout.addWidget(lonLabel)
         headerLayout.addWidget(self.lonText)
-        headerLayout.addWidget(timeLabel)
+        # headerLayout.addWidget(timeLabel)
         headerLayout.addWidget(self.timeText)
         poistionBox.setLayout(headerLayout)
         
@@ -313,7 +318,8 @@ class SeatDialog(QDialog):
         lon = str(info[2])
         self.latText.setText(lat)
         self.lonText.setText(lon)
-        self.timeText.setText(timestamp)
+        #todo
+        # self.timeText.setText(timestamp)
 
     def close(self):
         self.gps_process.requestInterruption()
