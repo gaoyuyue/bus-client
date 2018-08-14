@@ -50,7 +50,10 @@ class GPSHandler(QThread):
     def run(self):
         ser = serial.Serial(serialPort, 9600)
         while not self.isInterruptionRequested():
-            self.getGpsInfo(ser)
+            try:
+                self.getGpsInfo(ser)
+            except Exception as err:
+                print(err)
             time.sleep(0.1)
 
     def getGpsInfo(self,ser):
@@ -110,6 +113,7 @@ class ScanningHandler(QThread):
             zarimage = decode((raw, width, height))
 
             for symbol in zarimage:
+                print(symbol.data)
                 data = bytes.decode(self.decrypt(symbol.data))
                 if last == data:
                     continue
