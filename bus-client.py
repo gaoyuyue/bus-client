@@ -51,7 +51,7 @@ class GPSHandler(QThread):
         ser = serial.Serial(serialPort, 9600)
         while not self.isInterruptionRequested():
             self.getGpsInfo(ser)
-            time.sleep(1)
+            time.sleep(0.1)
 
     def getGpsInfo(self,ser):
         line = bytes.decode(ser.readline())
@@ -270,7 +270,7 @@ class SeatDialog(QDialog):
         headerLayout.addWidget(lonLabel)
         headerLayout.addWidget(self.lonText)
         # headerLayout.addWidget(timeLabel)
-        headerLayout.addWidget(self.timeText)
+        # headerLayout.addWidget(self.timeText)
         poistionBox.setLayout(headerLayout)
         
         seatBox = QGroupBox("座位号")
